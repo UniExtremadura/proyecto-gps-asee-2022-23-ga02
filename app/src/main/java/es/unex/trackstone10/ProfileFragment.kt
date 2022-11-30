@@ -43,6 +43,15 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.Change1.setOnClickListener {
+        }
+
+        binding.Change2.setOnClickListener {
+        }
+
+        binding.Change3.setOnClickListener {
+        }
+
         return view
 
     }
