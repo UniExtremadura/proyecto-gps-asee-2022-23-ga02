@@ -95,6 +95,12 @@ class ProfileFragment : Fragment() {
                 db?.deckDao?.deleteByUser(userid)
                 db?.deckListDao?.deleteByUser(userid)
             }
+            var edit = sharedPreferences?.edit()
+            edit?.clear()
+            edit?.commit()
+            Toast.makeText(activity, "User deleted!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(activity, LoginActivity::class.java)
+            startActivity(intent)
         }
 
         return view
