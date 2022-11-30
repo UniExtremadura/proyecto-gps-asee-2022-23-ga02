@@ -44,7 +44,7 @@ class CardFavInfoActivity : AppCompatActivity()  {
         }
         Glide.with(binding.cardDetails.context).load(cards.info).into(binding.cardDetails)
 
-        binding.addDeleteFavoriteButton.text = "Remove from Favorites"
+        binding.addDeleteFavoriteButton.text = "Delete from Favorites"
 
         binding.addDeleteFavoriteButton.setOnClickListener{
             AppExecutors.instance?.diskIO()?.execute {
