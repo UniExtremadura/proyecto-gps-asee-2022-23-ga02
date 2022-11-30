@@ -1,5 +1,4 @@
 package es.unex.trackstone10
-
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -35,6 +34,48 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.Change1.setOnClickListener {
+            AppExecutors.instance?.diskIO()?.execute {
+                val db = TrackstoneDatabase.getInstance(activity)
+                var user = db?.userdao?.getUserById(userid)
+                if (user != null) {
+                    user.mail = binding.profileEmailChange.text.toString()
+                    db?.userdao?.update(user)
+                }
+            }
+            Toast.makeText(activity, "Email updated!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.Change2.setOnClickListener {
+            AppExecutors.instance?.diskIO()?.execute {
+                val db = TrackstoneDatabase.getInstance(activity)
+                var user = db?.userdao?.getUserById(userid)
+                if (user != null) {
+                    user.username = binding.profileNameChange.text.toString()
+                    db?.userdao?.update(user)
+                }
+            }
+            Toast.makeText(activity, "Username updated!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.Change3.setOnClickListener {
+            AppExecutors.instance?.diskIO()?.execute {
+                val db = TrackstoneDatabase.getInstance(activity)
+                var user = db?.userdao?.getUserById(userid)
+                if (user != null) {
+                    user.password = binding.profilePasswordChange.text.toString()
+                    db?.userdao?.update(user)
+                }
+            }
+            Toast.makeText(activity, "Password updated!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.closeSessionButton.setOnClickListener {
             var edit = sharedPreferences?.edit()
             edit?.clear()
@@ -43,16 +84,6 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
-        binding.Change1.setOnClickListener {
-        }
-
-        binding.Change2.setOnClickListener {
-        }
-
-        binding.Change3.setOnClickListener {
-        }
-
         return view
-
     }
 }
