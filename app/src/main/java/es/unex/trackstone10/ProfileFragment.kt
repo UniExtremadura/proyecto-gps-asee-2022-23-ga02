@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import es.unex.trackstone10.*
-import es.unex.trackstone10.CU08.LoginActivity
+import es.unex.trackstone10.LoginActivity
 import es.unex.trackstone10.databinding.FragmentProfileBinding
 import es.unex.trackstone10.roomdb.TrackstoneDatabase
 
@@ -21,7 +21,6 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
 
     ): View? {
-
         val sharedPreferences = activity?.getSharedPreferences("userid",Context.MODE_PRIVATE)
         var userid = sharedPreferences?.getInt("userid",0)
         binding = FragmentProfileBinding.inflate(inflater,container,false)
