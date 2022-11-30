@@ -67,7 +67,10 @@ class DecksFragment : Fragment() {
             val db = TrackstoneDatabase.getInstance(activity)
             db?.deckDao?.deleteDeckFromId(deck?.id)
             db?.deckListDao?.deleteByDeckId(deck?.id)
-
+            handler.post {
+                deckList.removeAt(position)
+                adapter.notifyItemRemoved(position)
+            }
         }
 
     }
