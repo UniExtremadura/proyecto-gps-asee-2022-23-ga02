@@ -43,7 +43,7 @@ class DecksFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        adapter = deckAdapter(deckList, activity) { onDeletedItem(it, deckList[it]) }
+        adapter = deckAdapter(deckList, activity) {onDeletedItem(it, deckList[it]}
         binding.recyclerViewDecks.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewDecks.adapter = adapter
     }
@@ -64,7 +64,5 @@ class DecksFragment : Fragment() {
 
     private fun onDeletedItem(position: Int, deck: DeckEntity?) {
 
-
     }
-
 }
