@@ -22,7 +22,7 @@ class HeroFavInfoActivity : AppCompatActivity()  {
         binding.heroeSkinDetailsName.text = heroes.name
         Glide.with(binding.heroeSkinDetails.context).load(heroes.url).into(binding.heroeSkinDetails)
 
-        binding.addHeroeSkinFavorite.text = "Remove from Favorites"
+        binding.addHeroeSkinFavorite.text = "Delete from Favorites"
 
         binding.addHeroeSkinFavorite.setOnClickListener {
             AppExecutors.instance?.diskIO()?.execute {
