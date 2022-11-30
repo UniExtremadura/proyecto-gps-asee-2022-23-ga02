@@ -1,20 +1,20 @@
 package es.unex.trackstone10.ui.decks
 
-import es.unex.trackstone10.roomdb.TrackstoneDatabase
-import es.unex.trackstone10.adapter.deckAdapter
-import es.unex.trackstone10.CreateDeckActivity
-import es.unex.trackstone10.roomdb.Entity.DeckEntity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-
+import es.unex.trackstone10.*
+import es.unex.trackstone10.CreateDeckActivity
+import es.unex.trackstone10.adapter.deckAdapter
 import es.unex.trackstone10.databinding.FragmentDecksBinding
+import es.unex.trackstone10.roomdb.Entity.DeckEntity
+import es.unex.trackstone10.roomdb.TrackstoneDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,7 +43,7 @@ class DecksFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        adapter = deckAdapter(deckList, activity) {onDeletedItem(it, deckList[it]}
+        adapter = deckAdapter(deckList, activity) { onDeletedItem(it, deckList[it]) }
         binding.recyclerViewDecks.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewDecks.adapter = adapter
     }
@@ -63,6 +63,16 @@ class DecksFragment : Fragment() {
     }
 
     private fun onDeletedItem(position: Int, deck: DeckEntity?) {
+        AppExecutors.instance?.diskIO()?.execute {
+            val db = TrackstoneDatabase.getInstance(activity)
+            db?.deckDao?.deleteDeckFromId(deck?.id)
+            db?.deckListDao?.deleteByDeckId(deck?.id)
+            handler.post {
+                deckList.removeAt(position)
+                adapter.notifyItemRemoved(position)
+            }
+        }
 
     }
+
 }
