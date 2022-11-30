@@ -18,6 +18,8 @@ import es.unex.trackstone10.API.*
 import es.unex.trackstone10.adapter.cardAdapter
 import es.unex.trackstone10.databinding.FragmentCardsBinding
 import kotlinx.coroutines.*
+import es.unex.trackstone10.CardInfoActivity
+
 
 class CardsFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -40,9 +42,15 @@ class CardsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun initRecyclerView() {
-        adapter = cardAdapter(cardList) {  }
+        adapter = cardAdapter(cardList) { onItemSelected(it) }
         binding.recyclerViewCards.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewCards.adapter = adapter
+    }
+
+    private fun onItemSelected(cards: CardResponse) {
+        val intent: Intent = Intent(activity, CardInfoActivity::class.java)
+        intent.putExtra("CARD_OBJ", cards)
+        startActivity(intent)
     }
 
 
@@ -78,7 +86,13 @@ class CardsFragment : Fragment(), SearchView.OnQueryTextListener {
 
             val call =
                 retrofit.create(APIService::class.java)
-                    .getCardsByName(query, "standard", "groupByClass:asc,manaCost:asc",1300, "en_US")
+                    .getCardsByName(
+                        query,
+                        "standard",
+                        "groupByClass:asc,manaCost:asc",
+                        1300,
+                        "en_US"
+                    )
 
             val cards = call.body()
             handler.post {

@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import es.unex.trackstone10.HeroInfoActivity
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import es.unex.trackstone10.API.*
 import es.unex.trackstone10.adapter.cardAdapter
@@ -42,13 +44,16 @@ class HeroesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun initRecyclerView() {
-        adapter = cardAdapter(heroList) {  }
+        adapter = cardAdapter(heroList) { onItemSelected(it) }
         binding.recyclerViewCards.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewCards.adapter = adapter
     }
 
-
-
+    private fun onItemSelected(cards: CardResponse) {
+        val intent: Intent = Intent(activity, HeroInfoActivity::class.java)
+        intent.putExtra("CARD_OBJ", cards)
+        startActivity(intent)
+    }
 
     private fun getHeroes() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -118,7 +123,7 @@ class HeroesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        if(newText?.length == 0) {
+        if (newText?.length == 0) {
             getHeroes()
         }
         return true

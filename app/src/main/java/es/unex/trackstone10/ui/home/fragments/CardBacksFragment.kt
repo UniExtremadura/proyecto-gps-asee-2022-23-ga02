@@ -23,6 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import es.unex.trackstone10.CardBackInfoActivity
+
 
 class CardBacksFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -45,9 +47,15 @@ class CardBacksFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun initRecyclerView(){
-        adapter = cardbackAdapter(cardbackList) {}
+        adapter = cardbackAdapter(cardbackList) {onItemSelected(it)}
         binding.recyclerViewCards.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewCards.adapter = adapter
+    }
+
+    private fun onItemSelected(cardbacks: CardBackResponse) {
+        val intent: Intent = Intent(activity, CardBackInfoActivity::class.java)
+        intent.putExtra("CARD_BACK_OBJ", cardbacks)
+        startActivity(intent)
     }
 
 
@@ -114,12 +122,13 @@ class CardBacksFragment : Fragment(), SearchView.OnQueryTextListener {
         if (!query.isNullOrEmpty()) {
             searchByName(query)
         }
-
         return true
     }
 
 
-    override fun onQueryTextChange(newText: String?): Boolean {
+
+
+        override fun onQueryTextChange(newText: String?): Boolean {
         if(newText?.length == 0){getCardBacks()}
 
         return true
