@@ -28,6 +28,33 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
         else {
+            binding.loginButton.setOnClickListener {
+                if (binding.editTextTextPersonName.text.isNotEmpty() && binding.editTextPassword.text.isNotEmpty()) {
+                    var edit = sharedPreferences.edit()
+                    AppExecutors.instance?.diskIO()?.execute {
+                        val db = TrackstoneDatabase.getInstance(this)
+                        val user =
+                            db?.userdao?.getUserByName(binding.editTextTextPersonName.text.toString())
+                        if (user != null) {
+                            if (user.password.toString() == binding.editTextPassword.text.toString()) {
+                                edit.putInt("userid",user.id)
+                                edit.commit()
+                                val intent = Intent(this, ButtonNavigationMenuActivity::class.java)
+                                startActivity(intent)
+                            } else {
+                                runOnUiThread(Runnable() {
+                                    Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT)
+                                        .show()
+                                })
+                            }
+                        } else {
+                            runOnUiThread(Runnable() {
+                                Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show()
+                            })
+                        }
+                    }
+                }
+            }
         }
 
         binding.registerButton.setOnClickListener{
