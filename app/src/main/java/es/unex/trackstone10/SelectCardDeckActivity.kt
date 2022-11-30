@@ -1,4 +1,4 @@
-package es.unex.trackstone10.CU02
+package es.unex.trackstone10
 
 
 import android.content.Context
@@ -11,7 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import es.unex.trackstone10.API.*
 import es.unex.trackstone10.ButtonNavigationMenuActivity
-import es.unex.trackstone10.CU12.EditDeckActivity
+import es.unex.trackstone10.EditDeckActivity
 import es.unex.trackstone10.adapter.cardAddDeckAdapter
 import es.unex.trackstone10.databinding.ActivitySelectCardDeckBinding
 import es.unex.trackstone10.roomdb.TrackstoneDatabase

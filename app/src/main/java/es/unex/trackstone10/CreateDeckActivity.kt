@@ -1,4 +1,4 @@
-package es.unex.trackstone10.CU02
+package es.unex.trackstone10
 
 import android.content.Context
 import android.content.Intent

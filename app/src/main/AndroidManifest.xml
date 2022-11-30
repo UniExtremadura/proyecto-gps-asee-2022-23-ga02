@@ -23,6 +23,27 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".EditDeckActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".SelectCardDeckActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".CreateDeckActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".CardBackFavInfoActivity"
             android:exported="false">
             <meta-data
@@ -84,6 +105,5 @@
                 android:value="" />
         </activity>
     </application>
-
 
 </manifest>
