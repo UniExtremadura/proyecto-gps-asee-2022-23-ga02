@@ -1,6 +1,9 @@
 package es.unex.trackstone10.ui.decks
 
-
+import es.unex.trackstone10.roomdb.TrackstoneDatabase
+import es.unex.trackstone10.adapter.deckAdapter
+import es.unex.trackstone10.CreateDeckActivity
+import es.unex.trackstone10.roomdb.Entity.DeckEntity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -40,7 +43,7 @@ class DecksFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        adapter = deckAdapter(deckList, activity) {}
+        adapter = deckAdapter(deckList, activity) {onDeletedItem(it, deckList[it]}
         binding.recyclerViewDecks.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewDecks.adapter = adapter
     }
@@ -59,12 +62,7 @@ class DecksFragment : Fragment() {
         }
     }
 
+    private fun onDeletedItem(position: Int, deck: DeckEntity?) {
 
-
-
-
-
-
-
-
+    }
 }
