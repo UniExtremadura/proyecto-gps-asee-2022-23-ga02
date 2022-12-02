@@ -7,7 +7,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import es.unex.trackstone10.ui.decks.DecksFragment
 import es.unex.trackstone10.ui.favorites.FavoritesFragment
 import es.unex.trackstone10.ui.home.HomeFragment
-
 import es.unex.trackstone10.ui.profile.ProfileFragment
 
 class ButtonNavigationMenuActivity : AppCompatActivity() {
