@@ -40,7 +40,8 @@ class SelectCardDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListen
             goToEditCards(deckId)
         }
         binding.buttonFinishDeck.setOnClickListener {
-            this.finish()
+            intent = Intent(this, ButtonNavigationMenuActivity::class.java)
+            startActivity(intent)
         }
 
     }
