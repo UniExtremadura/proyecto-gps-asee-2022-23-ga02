@@ -30,7 +30,7 @@ class cardAddDeckHolder(view: View) : RecyclerView.ViewHolder(view) {
                 val db = TrackstoneDatabase.getInstance(context)
                 if(db?.deckDao?.getCountCards(id)!! < 30) {
                     if (cards != null && id != null) {
-                        val check = db?.deckListDao?.checkCard(id, cards.name!!)
+                        val check = db.deckListDao?.checkCard(id, cards.name!!)
                         if (check?.size != 0) {
                             if (db.deckListDao?.checkCopies(id, cards.name!!)!! == 1) {
                                 db.deckListDao?.incCopies(id, cards.name!!)
@@ -51,7 +51,7 @@ class cardAddDeckHolder(view: View) : RecyclerView.ViewHolder(view) {
                                     cards.image
                                 )
                             )
-                            db?.deckDao?.AddingCards(id)
+                            db.deckDao?.AddingCards(id)
                         }
                     }
                 }
