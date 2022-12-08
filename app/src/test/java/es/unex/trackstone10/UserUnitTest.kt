@@ -80,7 +80,7 @@ class UserUnitTest {
 
         val result : String? = instance.mail
 
-        assertEquals("eMail wasn't retrieved properly", result, "test@gmail.com")
+        assertEquals("Mail wasn't retrieved properly", result, "test@gmail.com")
 
     }
 
