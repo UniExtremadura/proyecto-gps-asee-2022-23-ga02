@@ -103,7 +103,7 @@ class DeckUnitTest {
 
         val result : Int? = instance.user_id
 
-        assertEquals("User Id wasnt retrieved properly", result, 1)
+        assertEquals("User Id wasn't retrieved properly", result, 1)
     }
 
 }
