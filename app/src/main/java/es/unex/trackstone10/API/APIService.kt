@@ -77,5 +77,7 @@ interface APIService {
         @Query("locale") locale: String
     ): Response<CardResponseList>
 
+    @GET("/getCardback")
+    fun getCardBack(): Response<CardBackResponse>
 
 }
