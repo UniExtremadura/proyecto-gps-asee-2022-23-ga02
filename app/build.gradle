@@ -80,4 +80,9 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     //kapt 'groupId:artifactId:version'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.0'
+    testImplementation "io.mockk:mockk:1.12.2"
+    testImplementation "com.google.truth:truth:1.1"
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 }
