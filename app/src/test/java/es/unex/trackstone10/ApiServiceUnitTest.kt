@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiServiceUnitTest {
 
+
     @Test
     fun getCardTest() {
 
@@ -43,5 +44,32 @@ class ApiServiceUnitTest {
 
     }
 
+    @Test
+    fun getCardBackTest() {
+
+        val mockWebServer = MockWebServer()
+        val cardback = CardBackResponse(1,2,"text","name","image","slug")
+        val mockResponse =
+            MockResponse().addHeader("CardBackResponse", "application/json; charset=utf-8")
+                .setBody("{\"cardback\": \"$cardback\"}")
+
+        mockWebServer.enqueue(mockResponse)
+        mockWebServer.start()
+
+        val baseUrl = mockWebServer.url("/getCardback")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = OkHttpClient.Builder().build()
+            val retrofit = Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create()).client(client)
+                .build()
+
+            val call = retrofit.create(APIService::class.java).getCardBack()
+            assertEquals(cardback,call.body())
+
+        }
+        mockWebServer.shutdown()
+
+    }
 
 }
