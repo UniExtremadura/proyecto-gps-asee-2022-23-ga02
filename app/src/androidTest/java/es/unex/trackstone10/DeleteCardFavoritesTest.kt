@@ -23,14 +23,14 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class DeleteFavoriteCardTest {
+class DeleteCardFavoritesTest {
 
     @Rule
     @JvmField
     var mActivityScenarioRule = ActivityScenarioRule(LoginActivity::class.java)
 
     @Test
-    fun deleteFavoriteCardTest() {
+    fun deleteCardFavoritesTest() {
         val appCompatButton = onView(
             allOf(
                 withId(R.id.registerButton), withText("Register"),
@@ -121,61 +121,6 @@ class DeleteFavoriteCardTest {
         )
         appCompatButton2.perform(click())
 
-        val appCompatImageView = onView(
-            allOf(
-                withId(com.bumptech.glide.R.id.search_button), withContentDescription("Search"),
-                childAtPosition(
-                    allOf(
-                        withId(com.bumptech.glide.R.id.search_bar),
-                        childAtPosition(
-                            withId(R.id.svCard),
-                            0
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        Thread.sleep(4000)
-        appCompatImageView.perform(click())
-
-        val searchAutoComplete = onView(
-            allOf(
-                withId(com.bumptech.glide.R.id.search_src_text),
-                childAtPosition(
-                    allOf(
-                        withId(com.bumptech.glide.R.id.search_plate),
-                        childAtPosition(
-                            withId(com.bumptech.glide.R.id.search_edit_frame),
-                            1
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        searchAutoComplete.perform(replaceText("Jailer"), closeSoftKeyboard())
-
-        val searchAutoComplete2 = onView(
-            allOf(
-                withId(com.bumptech.glide.R.id.search_src_text), withText("Jailer"),
-                childAtPosition(
-                    allOf(
-                        withId(com.bumptech.glide.R.id.search_plate),
-                        childAtPosition(
-                            withId(com.bumptech.glide.R.id.search_edit_frame),
-                            1
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        searchAutoComplete2.perform(pressImeActionButton())
-
         val recyclerView = onView(
             allOf(
                 withId(R.id.recyclerViewCards),
@@ -187,7 +132,7 @@ class DeleteFavoriteCardTest {
             )
         )
         Thread.sleep(4000)
-        recyclerView.perform(actionOnItemAtPosition<ViewHolder>(2, click()))
+        recyclerView.perform(actionOnItemAtPosition<ViewHolder>(0, click()))
 
         val appCompatButton3 = onView(
             allOf(
