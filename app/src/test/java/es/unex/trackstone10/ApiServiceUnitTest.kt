@@ -15,7 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiServiceUnitTest {
 
-
     @Test
     fun getCardTest() {
 
@@ -72,4 +71,31 @@ class ApiServiceUnitTest {
 
     }
 
+    @Test
+    fun getHeroTest() {
+
+        val mockWebServer = MockWebServer()
+        val hero = CardResponse(2,3,"slug",1,null,2,1,1,2,4,"artist",1,"name","text","image","imageGold","flavorTest","cropImage",null)
+        val mockResponse =
+            MockResponse().addHeader("CardResponse", "application/json; charset=utf-8")
+                .setBody("{\"hero\": \"$hero\"}")
+
+        mockWebServer.enqueue(mockResponse)
+        mockWebServer.start()
+
+        val baseUrl = mockWebServer.url("/getCard")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = OkHttpClient.Builder().build()
+            val retrofit = Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create()).client(client)
+                .build()
+
+            val call = retrofit.create(APIService::class.java).getCard()
+            assertEquals(hero,call.body())
+
+        }
+        mockWebServer.shutdown()
+
+    }
 }
