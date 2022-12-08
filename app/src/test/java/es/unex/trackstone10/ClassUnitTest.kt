@@ -103,6 +103,6 @@ class ClassUnitTest {
 
         val result : Int? = instance.userid
 
-        assertEquals("ero name wasn't retrieved properly", result, 1)
+        assertEquals("Hero name wasn't retrieved properly", result, 1)
     }
 }
