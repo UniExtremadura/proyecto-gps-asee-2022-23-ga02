@@ -193,6 +193,17 @@ class CardUnitTest {
         assertEquals("Card class wasn't retrieved properly", result, "Orc")
     }
 
+    @Test
+    fun getUserId() {
 
+        val instance = es.unex.trackstone10.roomdb.Entity.CardEntity("",0,0,0,"","","",0)
+        val field : Field = instance.javaClass.getDeclaredField("userid")
+        field.isAccessible = true
+        field.set(instance, 1)
+
+        val result : Int? = instance.userid
+
+        assertEquals("Card class wasn't retrieved properly", result, 1)
+    }
 
 }
