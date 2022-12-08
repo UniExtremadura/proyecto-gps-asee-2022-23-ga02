@@ -205,4 +205,5 @@ class CardUnitTest {
 
         assertEquals("Card class wasn't retrieved properly", result, 1)
     }
+
 }
