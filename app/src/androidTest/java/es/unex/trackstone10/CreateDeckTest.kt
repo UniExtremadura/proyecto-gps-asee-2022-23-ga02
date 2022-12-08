@@ -285,7 +285,8 @@ class CreateDeckTest {
 
         return object : TypeSafeMatcher<View>() {
             override fun describeTo(description: Description) {
-
+                description.appendText("Child at position $position in parent ")
+                parentMatcher.describeTo(description)
             }
 
             public override fun matchesSafely(view: View): Boolean {
