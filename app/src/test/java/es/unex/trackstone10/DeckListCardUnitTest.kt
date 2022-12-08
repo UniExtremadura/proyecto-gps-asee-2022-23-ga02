@@ -203,7 +203,7 @@ class DeckListCardUnitTest {
 
         val result : String? = instance.image
 
-        assertEquals("Card name wasnt retrieved properly", result, "https://d15f34w2p8l1cc.cloudfront.net/hearthstone/5873ffdcf397e2e8624d862cd2133c8c240c90e6f962ce8a24200aec9755ad0f.png")
+        assertEquals("Card name wasn't retrieved properly", result, "https://d15f34w2p8l1cc.cloudfront.net/hearthstone/5873ffdcf397e2e8624d862cd2133c8c240c90e6f962ce8a24200aec9755ad0f.png")
     }
 
 }
