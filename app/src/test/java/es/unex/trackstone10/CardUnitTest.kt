@@ -203,7 +203,7 @@ class CardUnitTest {
 
         val result : Int? = instance.userid
 
-        assertEquals("card class wasn't retrieved properly", result, 1)
+        assertEquals("Card class wasn't retrieved properly", result, 1)
     }
 
 }
