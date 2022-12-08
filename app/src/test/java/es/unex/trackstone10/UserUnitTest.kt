@@ -42,6 +42,46 @@ class UserUnitTest {
 
     }
 
+    @Test
+    fun getUsername() {
 
+        val instance = es.unex.trackstone10.roomdb.Entity.UserEntity("","","")
+        val field : Field = instance.javaClass.getDeclaredField("username")
+        field.isAccessible = true
+        field.set(instance, "test")
+
+        val result : String? = instance.username
+
+        assertEquals("Username wasn't retrieved properly", result, "test")
+
+    }
+
+    @Test
+    fun getPassword() {
+
+        val instance = es.unex.trackstone10.roomdb.Entity.UserEntity("","","")
+        val field : Field = instance.javaClass.getDeclaredField("password")
+        field.isAccessible = true
+        field.set(instance, "passwordTest")
+
+        val result : String? = instance.password
+
+        assertEquals("Password wasn't retrieved properly", result, "passwordTest")
+
+    }
+
+    @Test
+    fun getEmail() {
+
+        val instance = es.unex.trackstone10.roomdb.Entity.UserEntity("","","")
+        val field : Field = instance.javaClass.getDeclaredField("mail")
+        field.isAccessible = true
+        field.set(instance, "test@gmail.com")
+
+        val result : String? = instance.mail
+
+        assertEquals("Mail wasn't retrieved properly", result, "test@gmail.com")
+
+    }
 
 }
