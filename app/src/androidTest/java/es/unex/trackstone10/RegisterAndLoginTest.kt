@@ -168,24 +168,100 @@ class RegisterAndLoginTest {
         )
         appCompatButton3.perform(click())
 
+        val appCompatEditText5 = onView(
+            allOf(
+                withId(R.id.editTextTextPersonName),
+                childAtPosition(
+                    childAtPosition(
+                        withId(android.R.id.content),
+                        0
+                    ),
+                    1
+                ),
+                isDisplayed()
+            )
+        )
+        appCompatEditText5.perform(replaceText("test"), closeSoftKeyboard())
+
+        val appCompatEditText6 = onView(
+            allOf(
+                withId(R.id.editTextPassword),
+                childAtPosition(
+                    childAtPosition(
+                        withId(android.R.id.content),
+                        0
+                    ),
+                    2
+                ),
+                isDisplayed()
+            )
+        )
+        appCompatEditText6.perform(replaceText("test"), closeSoftKeyboard())
+
+        val appCompatButton4 = onView(
+            allOf(
+                withId(R.id.loginButton), withText("Login"),
+                childAtPosition(
+                    childAtPosition(
+                        withId(android.R.id.content),
+                        0
+                    ),
+                    3
+                ),
+                isDisplayed()
+            )
+        )
+        appCompatButton4.perform(click())
+
+        val bottomNavigationItemView2 = onView(
+            allOf(
+                withId(R.id.ic_profile), withContentDescription("Profile"),
+                childAtPosition(
+                    childAtPosition(
+                        withId(R.id.bottom_navigation),
+                        0
+                    ),
+                    3
+                ),
+                isDisplayed()
+            )
+        )
+        bottomNavigationItemView2.perform(click())
+
+        val textView3 = onView(
+            allOf(
+                withId(R.id.textViewEmail), withText("test@gmail.com"),
+                withParent(withParent(withId(R.id.fragment_container))),
+                isDisplayed()
+            )
+        )
+        textView3.check(matches(withText("test@gmail.com")))
+
+        val textView4 = onView(
+            allOf(
+                withId(R.id.textViewUsername), withText("test"),
+                withParent(withParent(withId(R.id.fragment_container))),
+                isDisplayed()
+            )
+        )
+        textView4.check(matches(withText("test")))
     }
 
-        private fun childAtPosition(
-            parentMatcher: Matcher<View>, position: Int
-        ): Matcher<View> {
+    private fun childAtPosition(
+        parentMatcher: Matcher<View>, position: Int
+    ): Matcher<View> {
 
-            return object : TypeSafeMatcher<View>() {
-                override fun describeTo(description: Description) {
-                    description.appendText("Child at position $position in parent ")
-                    parentMatcher.describeTo(description)
-                }
+        return object : TypeSafeMatcher<View>() {
+            override fun describeTo(description: Description) {
+                description.appendText("Child at position $position in parent ")
+                parentMatcher.describeTo(description)
+            }
 
-                public override fun matchesSafely(view: View): Boolean {
-                    val parent = view.parent
-                    return parent is ViewGroup && parentMatcher.matches(parent)
-                            && view == parent.getChildAt(position)
-                }
+            public override fun matchesSafely(view: View): Boolean {
+                val parent = view.parent
+                return parent is ViewGroup && parentMatcher.matches(parent)
+                        && view == parent.getChildAt(position)
             }
         }
-
+    }
 }
