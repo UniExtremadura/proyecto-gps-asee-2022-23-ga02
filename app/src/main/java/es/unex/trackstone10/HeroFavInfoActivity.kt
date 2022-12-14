@@ -1,6 +1,5 @@
 package es.unex.trackstone10
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
