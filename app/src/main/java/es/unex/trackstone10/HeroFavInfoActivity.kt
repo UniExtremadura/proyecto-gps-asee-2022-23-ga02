@@ -3,7 +3,6 @@ package es.unex.trackstone10
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import es.unex.trackstone10.AppExecutors
 import es.unex.trackstone10.ButtonNavigationMenuActivity
 import es.unex.trackstone10.databinding.ActivityHeroeSkinInfoBinding
 import es.unex.trackstone10.roomdb.Entity.ClassEntity
