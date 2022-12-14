@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.Glide
 import es.unex.trackstone10.API.CardResponse
-import es.unex.trackstone10.AppExecutors
 import es.unex.trackstone10.ButtonNavigationMenuActivity
 import es.unex.trackstone10.databinding.ActivityCardInfoBinding
 import es.unex.trackstone10.roomdb.Entity.CardEntity
