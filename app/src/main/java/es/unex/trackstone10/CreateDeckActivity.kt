@@ -61,6 +61,7 @@ class CreateDeckActivity : AppCompatActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
+                //Does nothing while no item is selected
             }
         }
 
