@@ -80,8 +80,8 @@ class TrackstoneViewModel @Inject constructor(
     val getCardsByNameResult = MutableLiveData<List<CardModel>>()
     val getAllCardBacksFromDatabaseResult = MutableLiveData<List<CardBackModel>>()
     val getCardBacksByNameFromDatabaseResult = MutableLiveData<List<CardBackModel>>()
-    val getAllHerosFromDatabaseResult = MutableLiveData<List<CardModel>>()
     val getHerosByNameFromDatabaseResult = MutableLiveData<List<CardModel>>()
+    val getAllHerosFromDatabaseResult = MutableLiveData<List<CardModel>>()
 
     fun register(user: UserEntity) {
         viewModelScope.launch(Dispatchers.IO) {
