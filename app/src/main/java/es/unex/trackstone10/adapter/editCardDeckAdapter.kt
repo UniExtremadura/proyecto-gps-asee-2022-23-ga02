@@ -5,13 +5,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import es.unex.trackstone10.R
-import es.unex.trackstone10.roomdb.Entity.DeckListCardEntity
+import es.unex.trackstone10.domain.CardModel
 
 class editCardDeckAdapter(
-    val cardsList: List<DeckListCardEntity?>,
     private val onClickDeleted:(Int) -> Unit,
     var deckId:Int?,
     var conText: FragmentActivity) : RecyclerView.Adapter<editCardDeckHolder>() {
+
+    private var cardsList: List<CardModel> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): editCardDeckHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -24,4 +25,16 @@ class editCardDeckAdapter(
     }
 
     override fun getItemCount(): Int = cardsList.size
+
+    fun swap(list: List<CardModel>){
+        cardsList = list
+        notifyDataSetChanged()
+    }
+
+    fun clear(){
+        cardsList = emptyList()
+        notifyDataSetChanged()
+    }
+
+    fun getAtPosition(position: Int) = cardsList[position]
 }

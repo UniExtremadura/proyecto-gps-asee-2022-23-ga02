@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import es.unex.trackstone10.R
-import es.unex.trackstone10.roomdb.Entity.CardBackEntity
+import es.unex.trackstone10.domain.CardBackModel
 
 class cardbackAdapterFav(
-    val cardBackList: List<CardBackEntity?>,
-    private val onClickListener: (CardBackEntity) -> Unit
+    private val onClickListener: (CardBackModel) -> Unit
 ) : RecyclerView.Adapter<cardbackHolderFav>() {
+
+    private var cardBackList: List<CardBackModel> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): cardbackHolderFav {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -22,4 +23,14 @@ class cardbackAdapterFav(
     }
 
     override fun getItemCount(): Int = cardBackList.size
+
+    fun swap(cardBackList2: List<CardBackModel>) {
+        cardBackList = cardBackList2
+        notifyDataSetChanged()
+    }
+
+    fun clear() {
+        cardBackList = emptyList()
+        notifyDataSetChanged()
+    }
 }

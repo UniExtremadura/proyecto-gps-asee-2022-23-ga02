@@ -1,113 +1,59 @@
 package es.unex.trackstone10.ui.home.fragments
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import es.unex.trackstone10.API.*
+import dagger.hilt.android.AndroidEntryPoint
+import es.unex.trackstone10.CardInfoActivity
+import es.unex.trackstone10.TrackstoneViewModel
 import es.unex.trackstone10.adapter.cardAdapter
 import es.unex.trackstone10.databinding.FragmentCardsBinding
-import kotlinx.coroutines.*
-import es.unex.trackstone10.CardInfoActivity
+import es.unex.trackstone10.domain.CardModel
 
-
+@AndroidEntryPoint
 class CardsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: FragmentCardsBinding
     private lateinit var adapter: cardAdapter
-    private val handler = Handler(Looper.getMainLooper())
-    private var cardList = (mutableListOf<CardResponse>())
+
+    private val trackstoneViewModel: TrackstoneViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCardsBinding.inflate(inflater, container, false)
         val view = binding.root
         binding.svCard.setOnQueryTextListener(this)
         initRecyclerView()
-        APIToken.getToken()
-        getCardsRecycler()
+        setAdapter()
         return view
     }
 
     private fun initRecyclerView() {
-        adapter = cardAdapter(cardList) { onItemSelected(it) }
+        adapter = cardAdapter() { onItemSelected(it) }
         binding.recyclerViewCards.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewCards.adapter = adapter
     }
 
-    private fun onItemSelected(cards: CardResponse) {
-        val intent: Intent = Intent(activity, CardInfoActivity::class.java)
+    private fun onItemSelected(cards: CardModel) {
+        val intent = Intent(activity, CardInfoActivity::class.java)
         intent.putExtra("CARD_OBJ", cards)
         startActivity(intent)
     }
 
-
-    private fun getCardsRecycler() {
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(2000)
-            val retrofit = APIToken.getRetrofit("/hearthstone/cards/")
-
-            val call = retrofit.create(APIService::class.java)
-                .getCards("standard", "groupByClass:asc,manaCost:asc", 1300, "en_US")
-
-            val cards = call.body()
-            handler.post {
-                if (call.isSuccessful) {
-                    if (cards != null) {
-                        val cardsReceived = cards.cards
-                        cardList.clear()
-                        cardList.addAll(cardsReceived)
-                        adapter.notifyDataSetChanged()
-                    }
-                } else {
-                    showError()
-                }
-            }
-        }
-    }
-
-
-    private fun searchByName(query: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val retrofit = APIToken.getRetrofit("/hearthstone/cards/")
-
-            val call =
-                retrofit.create(APIService::class.java)
-                    .getCardsByName(
-                        query,
-                        "standard",
-                        "groupByClass:asc,manaCost:asc",
-                        1300,
-                        "en_US"
-                    )
-
-            val cards = call.body()
-            handler.post {
-                if (call.isSuccessful) {
-                    if (cards != null) {
-                        val cardsReceived = cards.cards
-                        cardList.clear()
-                        cardList.addAll(cardsReceived)
-                        adapter.notifyDataSetChanged()
-                    }
-                } else {
-                    showError()
-                }
-                hideKeyboard()
-            }
+    private fun setAdapter() {
+        trackstoneViewModel.getAllCards()
+        trackstoneViewModel.allCards.observe(viewLifecycleOwner) {
+            adapter.swap(it)
         }
     }
 
@@ -116,13 +62,14 @@ class CardsFragment : Fragment(), SearchView.OnQueryTextListener {
         imm.hideSoftInputFromWindow(binding.Croot.windowToken, 0)
     }
 
-    private fun showError() {
-        Toast.makeText(activity, "Ha ocurrido un error", Toast.LENGTH_SHORT).show()
-    }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
+        hideKeyboard()
         if (!query.isNullOrEmpty()) {
-            searchByName(query)
+            trackstoneViewModel.getCardsByName(query)
+            trackstoneViewModel.searchedCards.observe(viewLifecycleOwner) {
+                adapter.swap(it)
+            }
         }
 
         return true
@@ -130,7 +77,7 @@ class CardsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String?): Boolean {
         if (newText?.length == 0) {
-            getCardsRecycler()
+            setAdapter()
         }
 
         return true

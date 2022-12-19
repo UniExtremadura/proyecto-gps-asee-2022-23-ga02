@@ -6,6 +6,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import es.unex.trackstone10.API.CardResponse
 
 @Entity(tableName = "card_table")
 class CardEntity : Serializable{
@@ -121,4 +122,6 @@ class CardEntity : Serializable{
         }
 
     }
+
+    fun CardResponse.toDatabase() = CardEntity(name = name, rarity = rarity, cardclass = cardclass, manacost = manacost, info = info, type = type, race = race, userid = userid)
 }

@@ -17,11 +17,14 @@ interface DeckDao {
     @Query("SELECT count FROM deck_table WHERE id = :idDeck")
     fun getCountCards(idDeck:Int?): Int?
 
+    @Query("SELECT * FROM deck_table WHERE id = :idDeck")
+    fun getDeck(idDeck: Int?) : DeckEntity
+
     @Query("UPDATE deck_table SET count = count + 1 WHERE id = :idDeck")
     fun AddingCards(idDeck:Int?)
 
     @Query("SELECT * FROM deck_table WHERE user_id = :id")
-    fun getAllFromUser(id: String): List<DeckEntity?>?
+    fun getAllFromUser(id: Int?): List<DeckEntity>
 
     @Insert
     fun insert(deck : DeckEntity?): Long
@@ -30,7 +33,7 @@ interface DeckDao {
     fun deleteAll()
 
     @Query("DELETE FROM deck_table WHERE id = :id")
-    fun deleteDeckFromId(id: Int?)
+    fun deleteDeckFromId(id: Int?) : Int
 
     @Query("UPDATE deck_table SET count = count-1 WHERE id = :deckID")
     fun decCount(deckID: Int)
@@ -39,6 +42,6 @@ interface DeckDao {
     fun getSlug(deckID: Int, userID:Int): Int?
 
     @Query("DELETE FROM deck_table WHERE user_id = :userid")
-    fun deleteByUser(userid: Int?)
+    fun deleteByUser(userid: Int?) : Int
 
 }

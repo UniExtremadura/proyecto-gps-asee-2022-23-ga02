@@ -10,13 +10,16 @@ import es.unex.trackstone10.roomdb.Entity.DeckListCardEntity
 interface DeckListDao {
 
     @Query("SELECT * FROM deck_list")
-    fun getAll(): List<DeckListCardEntity?>?
+    fun getAll(): List<DeckListCardEntity>?
 
     @Insert
     fun insert(decklist : DeckListCardEntity?): Long
 
     @Query("DELETE FROM deck_list")
     fun deleteAll()
+
+    @Query("SELECT SUM(copies) FROM deck_list WHERE deck_id = :deckID")
+    fun getCount(deckID: Int?): Int
 
     @Query("SELECT copies FROM deck_list WHERE deck_id = :deckID AND card_name LIKE :cardName")
     fun checkCopies(deckID: Int, cardName: String): Int
@@ -40,10 +43,10 @@ interface DeckListDao {
     fun deleteCardDeck(id: Int?, cardName: String?)
 
     @Query("SELECT * FROM deck_list WHERE deck_id = :id")
-    fun getAllByDeckId(id: Int?): List<DeckListCardEntity?>?
+    fun getAllByDeckId(id: Int?): List<DeckListCardEntity>?
 
-    @Query("SELECT * FROM deck_list WHERE card_name LIKE :text")
-    fun getCardsByName(text: String): List<DeckListCardEntity>?
+    @Query("SELECT * FROM deck_list WHERE card_name LIKE :text AND deck_id = :deckId")
+    fun getCardsByName(text: String, deckId: Int): List<DeckListCardEntity>?
 
     @Query("DELETE FROM deck_list WHERE user_id = :userid")
     fun deleteByUser(userid: Int?)

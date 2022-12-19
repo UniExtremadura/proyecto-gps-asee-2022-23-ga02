@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import dagger.hilt.android.AndroidEntryPoint
 import es.unex.trackstone10.*
-import es.unex.trackstone10.LoginActivity
 import es.unex.trackstone10.databinding.FragmentProfileBinding
-import es.unex.trackstone10.roomdb.TrackstoneDatabase
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
+
+    private val trackstoneViewModel : TrackstoneViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,57 +28,66 @@ class ProfileFragment : Fragment() {
     ): View? {
         val sharedPreferences = activity?.getSharedPreferences("userid",Context.MODE_PRIVATE)
         var userid = sharedPreferences?.getInt("userid",0)
+        val id = userid ?: 0
         binding = FragmentProfileBinding.inflate(inflater,container,false)
         val view = binding.root
-        AppExecutors.instance?.diskIO()?.execute {
-            val db = TrackstoneDatabase.getInstance(activity)
-            val user = db?.userdao?.getUserById(userid)
-            activity?.runOnUiThread {
-                binding.textViewEmail.text = user?.mail
-                binding.textViewUsername.text = user?.username
-            }
+        trackstoneViewModel.getUserToDisplay(id)
+        trackstoneViewModel.displayUserValues.observe(viewLifecycleOwner){
+            binding.textViewEmail.text = it.mail
+            binding.textViewUsername.text = it.username
         }
 
+
         binding.Change1.setOnClickListener {
-            AppExecutors.instance?.diskIO()?.execute {
-                val db = TrackstoneDatabase.getInstance(activity)
-                var user = db?.userdao?.getUserById(userid)
-                if (user != null) {
-                    user.mail = binding.profileEmailChange.text.toString()
-                    db?.userdao?.update(user)
+            val mail = binding.profileEmailChange.text.toString()
+            trackstoneViewModel.modifyUser(mail, id, 1)
+            trackstoneViewModel.modifyUserResult.observe(viewLifecycleOwner, Observer {
+                when (it) {
+                    true -> {
+                        Toast.makeText(activity, "Email updated!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
+                        startActivity(intent)
+                    }
+                    false -> {
+                        Toast.makeText(activity, "Email cant be updated", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
-            }
-            Toast.makeText(activity, "Email updated!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
-            startActivity(intent)
+            })
         }
 
         binding.Change2.setOnClickListener {
-            AppExecutors.instance?.diskIO()?.execute {
-                val db = TrackstoneDatabase.getInstance(activity)
-                var user = db?.userdao?.getUserById(userid)
-                if (user != null) {
-                    user.username = binding.profileNameChange.text.toString()
-                    db?.userdao?.update(user)
+            val username = binding.profileNameChange.text.toString()
+            trackstoneViewModel.modifyUser(username, id, 2)
+            trackstoneViewModel.modifyUserResult.observe(viewLifecycleOwner, Observer {
+                when (it) {
+                    true -> {
+                        Toast.makeText(activity, "Username updated!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
+                        startActivity(intent)
+                    }
+                    false -> {
+                        Toast.makeText(activity, "Username cant be updated", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-            Toast.makeText(activity, "Username updated!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
-            startActivity(intent)
+            })
         }
 
         binding.Change3.setOnClickListener {
-            AppExecutors.instance?.diskIO()?.execute {
-                val db = TrackstoneDatabase.getInstance(activity)
-                var user = db?.userdao?.getUserById(userid)
-                if (user != null) {
-                    user.password = binding.profilePasswordChange.text.toString()
-                    db?.userdao?.update(user)
+            val password = binding.profilePasswordChange.text.toString()
+            trackstoneViewModel.modifyUser(password, id, 3)
+            trackstoneViewModel.modifyUserResult.observe(viewLifecycleOwner, Observer {
+                when (it) {
+                    true -> {
+                        Toast.makeText(activity, "Password updated!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
+                        startActivity(intent)
+                    }
+                    false -> {
+                        Toast.makeText(activity, "Password cant be updated", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-            Toast.makeText(activity, "Password updated!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(activity, ButtonNavigationMenuActivity::class.java)
-            startActivity(intent)
+            })
         }
 
         binding.closeSessionButton.setOnClickListener {
@@ -86,21 +99,20 @@ class ProfileFragment : Fragment() {
         }
 
         binding.deleteUserButton.setOnClickListener {
-            AppExecutors.instance?.diskIO()?.execute {
-                val db = TrackstoneDatabase.getInstance(activity)
-                db?.userdao?.deleteUser(userid)
-                db?.carddao?.deleteByUser(userid)
-                db?.classDao?.deleteByUser(userid)
-                db?.cardbackdao?.deleteByUser(userid)
-                db?.deckDao?.deleteByUser(userid)
-                db?.deckListDao?.deleteByUser(userid)
-            }
-            var edit = sharedPreferences?.edit()
-            edit?.clear()
-            edit?.commit()
-            Toast.makeText(activity, "User deleted!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(activity, LoginActivity::class.java)
-            startActivity(intent)
+            trackstoneViewModel.deleteUser(userid)
+            trackstoneViewModel.deleteResult.observe(viewLifecycleOwner, Observer {
+                when (it) {
+                    true -> {
+                        Toast.makeText(activity, "User deleted!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(activity, LoginActivity::class.java)
+                        startActivity(intent)
+                    }
+                    false -> {
+                        Toast.makeText(activity, "That user cant be deleted", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            })
         }
 
         return view

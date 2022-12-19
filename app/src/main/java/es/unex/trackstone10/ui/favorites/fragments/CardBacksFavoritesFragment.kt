@@ -1,6 +1,5 @@
 package es.unex.trackstone10.ui.favorites.fragments
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,24 +8,30 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import es.unex.trackstone10.CardBackFavInfoActivity
+import es.unex.trackstone10.TrackstoneViewModel
 import es.unex.trackstone10.adapter.cardbackAdapterFav
 import es.unex.trackstone10.databinding.FragmentCardBacksBinding
+import es.unex.trackstone10.domain.CardBackModel
 import es.unex.trackstone10.roomdb.Entity.CardBackEntity
-import es.unex.trackstone10.roomdb.TrackstoneDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
+
+@AndroidEntryPoint
 class CardBacksFavoritesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: FragmentCardBacksBinding
     private lateinit var adapter: cardbackAdapterFav
     private val handler = Handler(Looper.getMainLooper())
     private var cardBackList = (mutableListOf<CardBackEntity?>())
+
+    private val trackstoneViewModel : TrackstoneViewModel by viewModels()
 
     var userId:Int? = 0
 
@@ -38,68 +43,52 @@ class CardBacksFavoritesFragment : Fragment(), SearchView.OnQueryTextListener {
         val view = binding.root
         binding.svCard.setOnQueryTextListener(this)
         initRecyclerView()
-        getCardBackFav()
         val sharedPreferences = activity?.getSharedPreferences("userid", Context.MODE_PRIVATE)
         userId = sharedPreferences?.getInt("userid", 0)
+        setAdapter()
         return view
     }
 
     private fun initRecyclerView(){
-        adapter = cardbackAdapterFav(cardBackList) { onItemSelected(it) }
+        adapter = cardbackAdapterFav() { onItemSelected((it))}
         binding.recyclerViewCards.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerViewCards.adapter = adapter
     }
 
-    private fun onItemSelected(cardbacks: CardBackEntity) {
+    private fun onItemSelected(cardbacks: CardBackModel) {
         val intent: Intent = Intent(activity, CardBackFavInfoActivity::class.java)
         intent.putExtra("CARD_BACK_OBJ", cardbacks)
         startActivity(intent)
     }
 
-    private fun getCardBackFav(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = TrackstoneDatabase.getInstance(activity)
-            val cardback = db?.cardbackdao?.getAllById(userId)
-            handler.post{
-                if(cardback != null){
-                    cardBackList.clear()
-                    cardBackList.addAll(cardback)
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        }
+    private fun setAdapter(){
+        trackstoneViewModel.getAllCardBacksDatabase(userId)
+        trackstoneViewModel.getAllCardBacksFromDatabaseResult.observe(viewLifecycleOwner, Observer {
+            adapter.swap(it)
+        })
     }
 
-    private fun searchByName(query: String){
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = TrackstoneDatabase.getInstance(activity)
-            val query2 = "%$query%"
-            val cardback = db?.cardbackdao?.getByNameAndId(query2,userId)
-            handler.post{
-                if(cardback != null){
-                    cardBackList.clear()
-                    cardBackList.addAll(cardback)
-                    adapter.notifyDataSetChanged()
-                }
-            }
-        }
+    private fun hideKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.CBroot.windowToken, 0)
     }
+
 
     override fun onQueryTextSubmit(query: String?):Boolean{
+        hideKeyboard()
         if(!query.isNullOrEmpty()){
-            searchByName(query)
+            trackstoneViewModel.getCardBacksByNameDatabase(query,userId)
+            trackstoneViewModel.getCardBacksByNameFromDatabaseResult.observe(viewLifecycleOwner, Observer {
+                adapter.swap(it)
+            })
         }
         return true
     }
 
     override fun onQueryTextChange(newText:String?): Boolean{
-        if(newText?.length == 0){
-            getCardBackFav()}
+        if(newText?.length == 0) {
+            setAdapter()
+        }
         return true
-    }
-
-    override fun onResume(){
-        super.onResume()
-        getCardBackFav()
     }
 }

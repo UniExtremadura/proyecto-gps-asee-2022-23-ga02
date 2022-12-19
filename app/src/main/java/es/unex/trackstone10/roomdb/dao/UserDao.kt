@@ -22,10 +22,10 @@ interface UserDao {
     fun update(user: UserEntity?): Int
 
     @Query("SELECT * FROM user_table WHERE username = :username")
-    fun getUserByName(username:String): UserEntity
+    fun getUserByName(username:String): UserEntity?
 
     @Query("SELECT * FROM user_table WHERE id = :userid")
-    fun getUserById(userid:Int?): UserEntity
+    fun getUserById(userid:Int): UserEntity?
 
     @Query("DELETE FROM user_table WHERE id = :userid")
     fun deleteUser(userid:Int?): Int

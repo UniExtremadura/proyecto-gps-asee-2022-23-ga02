@@ -4,11 +4,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
+import es.unex.trackstone10.API.APIToken
 import es.unex.trackstone10.ui.decks.DecksFragment
 import es.unex.trackstone10.ui.favorites.FavoritesFragment
 import es.unex.trackstone10.ui.home.HomeFragment
 import es.unex.trackstone10.ui.profile.ProfileFragment
 
+@AndroidEntryPoint
 class ButtonNavigationMenuActivity : AppCompatActivity() {
 
     private val homeFragment = HomeFragment()
@@ -20,6 +23,7 @@ class ButtonNavigationMenuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_button_navigation_menu)
         replaceFragment(homeFragment)
+        APIToken.getToken()
 
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigation.setOnItemSelectedListener {

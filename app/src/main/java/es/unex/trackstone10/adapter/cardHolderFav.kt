@@ -4,14 +4,14 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import es.unex.trackstone10.databinding.ItemCardBinding
-import es.unex.trackstone10.roomdb.Entity.CardEntity
+import es.unex.trackstone10.domain.CardModel
 
 class cardHolderFav (view: View) : RecyclerView.ViewHolder(view) {
 
     val binding = ItemCardBinding.bind(view)
 
 
-    fun render(cards: CardEntity?, onClickListener: (CardEntity) -> Unit){
+    fun render(cards: CardModel, onClickListener: (CardModel) -> Unit){
         if(cards != null) {
             binding.tvCard.text = cards.name
             when (cards.rarity) {

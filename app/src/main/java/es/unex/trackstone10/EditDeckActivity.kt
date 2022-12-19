@@ -3,26 +3,25 @@ package es.unex.trackstone10
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
-import es.unex.trackstone10.AppExecutors
-import es.unex.trackstone10.ButtonNavigationMenuActivity
-import es.unex.trackstone10.SelectCardDeckActivity
+import dagger.hilt.android.AndroidEntryPoint
 import es.unex.trackstone10.adapter.editCardDeckAdapter
 import es.unex.trackstone10.databinding.ActivitySelectCardDeckBinding
-import es.unex.trackstone10.roomdb.Entity.DeckListCardEntity
-import es.unex.trackstone10.roomdb.TrackstoneDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import es.unex.trackstone10.domain.CardModel
 
+@AndroidEntryPoint
 class EditDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivitySelectCardDeckBinding
     private lateinit var adapter: editCardDeckAdapter
-    private val cardList = (mutableListOf<DeckListCardEntity?>())
     private var deckId = 0
+
+    private val trackstoneViewModel: TrackstoneViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,26 +29,27 @@ class EditDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         val deckIdFromIntent = intent.getIntExtra("DECK_ID", 0)
         binding.svCard.setOnQueryTextListener(this)
         deckId = deckIdFromIntent
-        AppExecutors.instance?.diskIO()?.execute {
-            val db = TrackstoneDatabase.getInstance(this)
-            val count = db?.deckDao?.getCountCards(deckId).toString()
-            binding.contCards.text = "CARD COUNT: $count/30"
+
+        trackstoneViewModel.getDecklistCount(deckId)
+        trackstoneViewModel.deckCount.observe(this){
+            binding.contCards.text = "CARD COUNT: $it/30"
         }
+
         setContentView(binding.root)
         initRecyclerView(deckId)
-        getDeckCardRecycler(deckId)
+        setAdapter()
         binding.buttonCreateDeck.setOnClickListener {
             goToAddCards(deckId)
         }
         binding.buttonFinishDeck.setOnClickListener {
-            this.finish()
+            val intent = Intent(this, ButtonNavigationMenuActivity::class.java)
+            startActivity(intent)
         }
     }
 
     private fun initRecyclerView(deckId: Int) {
         adapter = editCardDeckAdapter(
-            cardsList = cardList,
-            onClickDeleted = { onDeletedItem(it, deckId, cardList[it]) },
+            onClickDeleted = { onDeletedItem(it, adapter.getAtPosition(it)) },
             deckId = deckId,
             conText = this
         )
@@ -57,55 +57,38 @@ class EditDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         binding.recyclerViewCards.adapter = adapter
     }
 
-    private fun getDeckCardRecycler(deckId: Int) {
-        AppExecutors.instance?.diskIO()?.execute {
-            val db = TrackstoneDatabase.getInstance(this)
-            val cards = db?.deckListDao?.getAllByDeckId(deckId)
-            runOnUiThread {
-                if (cards != null) {
-                    cardList.clear()
-                    cardList.addAll(cards)
-                    adapter.notifyDataSetChanged()
-                }
-            }
+    private fun setAdapter() {
+        trackstoneViewModel.getDeckList(deckId)
+        trackstoneViewModel.deckList.observe(this) {
+            adapter.swap(it)
         }
     }
 
     private fun getDeckCardByName(query: String) {
-        AppExecutors.instance?.diskIO()?.execute {
-            val db = TrackstoneDatabase.getInstance(this)
-            val queryPercentage = "%$query%"
-            val cards = db?.deckListDao?.getCardsByName(queryPercentage)
-            runOnUiThread {
-                if (cards != null) {
-                    cardList.clear()
-                    cardList.addAll(cards)
-                    adapter.notifyDataSetChanged()
-                }
-            }
+        trackstoneViewModel.getCardFromDeckList(query, deckId)
+        trackstoneViewModel.cardsFromDeckByName.observe(this) {
+            adapter.swap(it)
         }
     }
 
-    fun onDeletedItem(position: Int, deckId: Int, cards: DeckListCardEntity?) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = TrackstoneDatabase.getInstance(this@EditDeckActivity)
-            if (cards != null) {
-                if (db?.deckListDao?.checkCopies(deckId, cards.card_name!!)!! == 1) {
-                    db.deckListDao?.deleteCardDeck(deckId, cards.card_name)
-                    db.deckDao?.decCount(deckId)
-                    runOnUiThread {
-                        cardList.removeAt(position)
-                        adapter.notifyItemRemoved(position)
-                    }
-                } else {
-                    db.deckListDao?.decCopies(deckId, cards.card_name!!)
-                    db.deckDao?.decCount(deckId)
+    fun onDeletedItem(position: Int, cards: CardModel) {
+        cards.name?.let { trackstoneViewModel.deleteCardFromDeck(deckId, it) }
+        trackstoneViewModel.deleteCardFromDeckResult.observe(this) {
+            when (it) {
+                1 -> trackstoneViewModel.deckList.observe(this){ card ->
+                    adapter.swap(card)
                 }
+
+                2 -> Toast.makeText(this, "Copy removed from deck", Toast.LENGTH_SHORT).show()
+
+                3 -> Toast.makeText(this, "ERROR removing card from deck", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
+        hideKeyboard()
         if (!query.isNullOrEmpty()) {
             getDeckCardByName(query)
         }
@@ -114,7 +97,7 @@ class EditDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextChange(newText: String?): Boolean {
         if (newText?.length == 0) {
-            getDeckCardRecycler(deckId)
+            setAdapter()
         }
         return true
     }
@@ -122,21 +105,23 @@ class EditDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     fun goToAddCards(deckId: Int) {
         val sharedPreferences = getSharedPreferences("userid", Context.MODE_PRIVATE)
         var userId = sharedPreferences.getInt("userid", 0)
+        var idClass = 0
+        trackstoneViewModel.getDeck(deckId)
+        trackstoneViewModel.deckById.observe(this) {
+            idClass = it.classid ?: 0
+            val textClass = slugIntToString(idClass)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val db = TrackstoneDatabase.getInstance(this@EditDeckActivity)
-            val class_id = db?.deckDao?.getSlug(deckId, userId)
-            val textClass = slugIntToString(class_id)
-
-            runOnUiThread {
-                val intent = Intent(this@EditDeckActivity, SelectCardDeckActivity::class.java)
-                intent.putExtra("USER_ID", userId)
-                intent.putExtra("DECK_ID", deckId)
-                intent.putExtra("CLASS_SLUG", textClass.lowercase())
-                startActivity(intent)
-            }
+            val intent = Intent(this@EditDeckActivity, SelectCardDeckActivity::class.java)
+            intent.putExtra("USER_ID", userId)
+            intent.putExtra("DECK_ID", deckId)
+            intent.putExtra("CLASS_SLUG", textClass.lowercase())
+            startActivity(intent)
         }
+    }
 
+    private fun hideKeyboard() {
+        val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.Croot.windowToken, 0)
     }
 
     fun slugIntToString(id: Int?): String {
@@ -155,11 +140,6 @@ class EditDeckActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             11 -> slug = "Warrior"
         }
         return slug
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        getDeckCardRecycler(deckId)
     }
 
 }

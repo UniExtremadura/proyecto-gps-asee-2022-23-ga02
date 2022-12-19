@@ -10,10 +10,10 @@ import es.unex.trackstone10.roomdb.Entity.CardBackEntity
 interface CardBackDao {
 
     @Query("SELECT * FROM card_back_table WHERE userid = :userid")
-    fun getAllById(userid : Int?): List<CardBackEntity?>?
+    fun getAllById(userid : Int?): List<CardBackEntity>?
 
     @Query("SELECT * FROM card_back_table WHERE name LIKE :nameQuery AND userid = :userid")
-    fun getByNameAndId(nameQuery: String,userid : Int?): List<CardBackEntity?>?
+    fun getByNameAndId(nameQuery: String,userid : Int?): List<CardBackEntity>?
 
     @Insert
     fun insert(cardback : CardBackEntity?): Long
@@ -25,7 +25,7 @@ interface CardBackDao {
     fun update(cardback: CardBackEntity?): Int
 
     @Query("DELETE FROM card_back_table WHERE id = :idCardBack")
-    fun deleteFromId(idCardBack: Int)
+    fun deleteFromId(idCardBack: Int?): Int
 
     @Query("DELETE FROM card_back_table WHERE userid = :userid")
     fun deleteByUser(userid: Int?)

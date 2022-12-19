@@ -34,5 +34,6 @@
     <string name="title_decks">Decks</string>
     <string name="title_favorites">Favorites</string>
     <string name="title_profile">Profile</string>
+    <string name="emptyText"> </string>
 
 </resources>

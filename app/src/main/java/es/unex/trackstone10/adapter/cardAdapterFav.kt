@@ -4,14 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import es.unex.trackstone10.R
-import es.unex.trackstone10.roomdb.Entity.CardEntity
+import es.unex.trackstone10.domain.CardModel
 
-class cardAdapterFav(val cardList: List<CardEntity?>, private val onClickListener: (CardEntity) -> Unit) : RecyclerView.Adapter<cardHolderFav>() {
+class cardAdapterFav(private val onClickListener: (CardModel) -> Unit) :
+    RecyclerView.Adapter<cardHolderFav>() {
 
+    private var cardList: List<CardModel> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): cardHolderFav {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return cardHolderFav(layoutInflater.inflate(R.layout.item_card,parent,false))
+        return cardHolderFav(layoutInflater.inflate(R.layout.item_card, parent, false))
     }
 
     override fun onBindViewHolder(holder: cardHolderFav, position: Int) {
@@ -20,4 +22,14 @@ class cardAdapterFav(val cardList: List<CardEntity?>, private val onClickListene
     }
 
     override fun getItemCount(): Int = cardList.size
+
+    fun swap(cardList2: List<CardModel>) {
+        cardList = cardList2
+        notifyDataSetChanged()
     }
+
+    fun clear() {
+        cardList = emptyList()
+        notifyDataSetChanged()
+    }
+}

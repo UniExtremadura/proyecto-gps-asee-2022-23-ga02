@@ -10,7 +10,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import es.unex.trackstone10.LoginActivity
 import es.unex.trackstone10.R
 import org.hamcrest.Description
 import org.hamcrest.Matcher

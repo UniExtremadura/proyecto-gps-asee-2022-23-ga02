@@ -10,10 +10,10 @@ import es.unex.trackstone10.roomdb.Entity.ClassEntity
 interface ClassDao {
 
     @Query("SELECT * FROM class_table WHERE userid = :userid")
-    fun getAllById(userid: Int?): List<ClassEntity?>?
+    fun getAllById(userid: Int?): List<ClassEntity>?
 
     @Query("SELECT * FROM class_table WHERE name LIKE :nameQuery AND userid = :userid")
-    fun getByNameAndId(nameQuery: String,userid: Int?): List<ClassEntity?>?
+    fun getByNameAndId(nameQuery: String,userid: Int?): List<ClassEntity>?
 
     @Insert
     fun insert(classE: ClassEntity?): Long
@@ -25,7 +25,7 @@ interface ClassDao {
     fun update(classE: ClassEntity?): Int
 
     @Query("DELETE FROM class_table WHERE id = :idClass")
-    fun deleteFromId(idClass: Int)
+    fun deleteFromId(idClass: Int?): Int
 
     @Query("DELETE FROM class_table WHERE userid = :userid")
     fun deleteByUser(userid: Int?)

@@ -1,16 +1,16 @@
 package es.unex.trackstone10.adapter
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import es.unex.trackstone10.API.CardResponse
 import es.unex.trackstone10.databinding.ItemAddCardDeckBinding
+import es.unex.trackstone10.di.RoomModule
+import es.unex.trackstone10.domain.CardModel
 import es.unex.trackstone10.roomdb.Entity.DeckListCardEntity
-import es.unex.trackstone10.roomdb.TrackstoneDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,37 +21,37 @@ class cardAddDeckHolder(view: View) : RecyclerView.ViewHolder(view) {
     private val handler = Handler(Looper.getMainLooper())
 
 
-    fun render(cards: CardResponse, id: Int?, user: Int?, context: FragmentActivity?) {
+    fun render(cards: CardModel, id: Int?, user: Int?, context: Context) {
         binding.tvCard.text = cards.name
 
-        Glide.with(binding.ivCard.context).load(cards.image).into(binding.ivCard)
+        Glide.with(binding.ivCard.context).load(cards.info).into(binding.ivCard)
         binding.AddCardDeckButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                val db = TrackstoneDatabase.getInstance(context)
-                if(db?.deckDao?.getCountCards(id)!! < 30) {
+                val db = RoomModule.provideRoom(context)
+                if(db?.getDeckListDao()?.getCount(id)?:0 < 30) {
                     if (cards != null && id != null) {
-                        val check = db.deckListDao?.checkCard(id, cards.name!!)
+                        val check = db?.getDeckListDao()?.checkCard(id, cards.name!!)
                         if (check?.size != 0) {
-                            if (db.deckListDao?.checkCopies(id, cards.name!!)!! == 1) {
-                                db.deckListDao?.incCopies(id, cards.name!!)
-                                db.deckDao?.AddingCards(id)
+                            if (db.getDeckListDao()?.checkCopies(id, cards.name!!)!! == 1) {
+                                db.getDeckListDao()?.incCopies(id, cards.name!!)
+                                db.getDeckDao()?.AddingCards(id)
                             } else {
                                 //error
                             }
                         } else {
-                            db.deckListDao?.insert(
+                            db.getDeckListDao()?.insert(
                                 DeckListCardEntity(
                                     id,
                                     user,
                                     cards.name,
                                     1,
-                                    cards.rarityId,
-                                    cards.classId,
-                                    cards.manaCost,
-                                    cards.image
+                                    cards.rarity,
+                                    cards.cardclass,
+                                    cards.manacost,
+                                    cards.info
                                 )
                             )
-                            db.deckDao?.AddingCards(id)
+                            db?.getDeckDao()?.AddingCards(id)
                         }
                     }
                 }

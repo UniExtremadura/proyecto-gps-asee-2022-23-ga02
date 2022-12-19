@@ -51,7 +51,7 @@ interface APIService {
     ): Response<CardResponseList>
 
     @GET("/hearthstone/cardbacks")
-    suspend fun getCardBacksByName(
+    suspend fun getCardBacks(
         @Query("locale") locale: String
     ): Response<CardBackResponseList>
 
@@ -77,11 +77,5 @@ interface APIService {
         @Query("locale") locale: String
     ): Response<CardResponseList>
 
-    //Test Methods
-    @GET("/getCard")
-    fun getCard(): Response<CardResponse>
-
-    @GET("/getCardback")
-    fun getCardBack(): Response<CardBackResponse>
 
 }

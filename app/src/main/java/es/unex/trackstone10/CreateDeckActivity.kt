@@ -8,18 +8,22 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import es.unex.trackstone10.AppExecutors
-import es.unex.trackstone10.R
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import dagger.hilt.android.AndroidEntryPoint
 import es.unex.trackstone10.databinding.ActivityCreateDeckBinding
 import es.unex.trackstone10.roomdb.Entity.DeckEntity
-import es.unex.trackstone10.roomdb.TrackstoneDatabase
 
+@AndroidEntryPoint
 class CreateDeckActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateDeckBinding
     lateinit var option: Spinner
-    private lateinit var textClass:String
-    var deckId:Int = 0
+    private lateinit var textClass: String
+    var deckId: Int = 0
+
+    private val trackstoneViewModel: TrackstoneViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,33 +65,23 @@ class CreateDeckActivity : AppCompatActivity() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                //Does nothing while no item is selected
             }
         }
 
         binding.addCardButton.setOnClickListener {
-            AppExecutors.instance?.diskIO()?.execute {
-                val db = TrackstoneDatabase.getInstance(this)
-                db?.deckDao?.insert(
-                    DeckEntity(
-                        num,
-                        binding.editTextTextPersonName.text.toString(),
-                        0,
-                        userId,
-
-                    )
-                )
-                var deck = db?.deckDao?.getEntity(binding.editTextTextPersonName.text.toString())
-                if(deck?.id != null) {
-                    deckId = deck.id
-                }
-                val intent = Intent(this, SelectCardDeckActivity::class.java)
-                intent.putExtra("USER_ID", userId)
-                intent.putExtra("DECK_ID", deckId)
-                intent.putExtra("CLASS_SLUG", textClass.lowercase())
-                startActivity(intent)
-            }
-
+            val deck = DeckEntity(num, binding.editTextTextPersonName.text.toString(), 0, userId)
+            trackstoneViewModel.addDeck(deck)
+            trackstoneViewModel.createDeckResult.observe(this, Observer {
+                if(it > 0){
+                        val intent = Intent(this, SelectCardDeckActivity::class.java)
+                        intent.putExtra("USER_ID", userId)
+                        intent.putExtra("DECK_ID", it)
+                        intent.putExtra("CLASS_SLUG", textClass.lowercase())
+                        startActivity(intent)
+                    }else{
+                        Toast.makeText(this, "Deck cant be create", Toast.LENGTH_SHORT).show()
+                    }
+            })
         }
     }
 
@@ -108,5 +102,4 @@ class CreateDeckActivity : AppCompatActivity() {
         }
         return num
     }
-
 }

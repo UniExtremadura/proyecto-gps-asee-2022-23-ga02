@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purpleCute">
+    android:background="@color/purpleCute"
+    tools:context=".HeroInfoActivity">
 
     <ImageView
         android:id="@+id/heroe_skinDetails"

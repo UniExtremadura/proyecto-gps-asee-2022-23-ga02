@@ -28,7 +28,7 @@ class CardBackEntity : Serializable {
         this.userid = userid
     }
 
-    constructor(id: Int, name: String?, url: String,userid: Int?) {
+    constructor(id: Int, name: String?, url: String?, userid: Int?) {
         this.id = id
         this.name = name
         this.url = url
